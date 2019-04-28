@@ -94,7 +94,8 @@ this.$notify({
       if (reguname && regpsd) {
         let obj = { user_name: this.inp, password: this.psw };
         this.axios.post("https://elm.cangdu.org/admin/login", obj).then(res => {
-          if (res.data.status === 1) {
+         console.log(res.data)
+         if (res.data.status === 1) {
             this.$router.push({ name: "Manage" });
           }
         });

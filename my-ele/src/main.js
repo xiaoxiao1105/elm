@@ -8,6 +8,8 @@ import 'element-ui/lib/theme-chalk/index.css'
 Vue.config.productionTip = false
 import axios from 'axios'
 Vue.prototype.axios=axios
+import echarts from 'echarts'
+Vue.prototype.$echarts = echarts
 Vue.use(ElementUI,{size:'small',zIndex:3000})
 /* eslint-disable no-new */
 new Vue({
