@@ -1,21 +1,12 @@
 <template>
   <div class="kl">
-    <div class="header_container">
-      <p>
-        <el-breadcrumb separator="/">
-          <el-breadcrumb-item :to="{ path: '/home' }">首页</el-breadcrumb-item>
-          <el-breadcrumb-item>添加数据</el-breadcrumb-item>
-          <el-breadcrumb-item>添加商品</el-breadcrumb-item>
-        </el-breadcrumb>
-      </p>
-      <div><img src="//elm.cangdu.org/img/default.jpg" class="avator" /></div>
-    </div>
+    <!-- -->
     <div class="from">
-      <header>选择食品种类</header>
+      <header><h2>选择食品种类</h2></header>
       <div class="from-inp">
         <div>
           食品种类
-          <el-select v-model="value" placeholder="请选择">
+          <el-select v-model="value" placeholder="请选择" @change="food(value)">
             <el-option
               v-for="item in options"
               :label="item.name"
@@ -24,23 +15,34 @@
             </el-option>
           </el-select>
         </div>
-        <div v-show="shoe">
-          <p>食品种类<el-input v-model="input"></el-input></p>
-          <p>种类描述<el-input v-model="input1"></el-input></p>
-          <el-button @click="tj">提交</el-button>
-        </div>
+      
+          <el-form label-width="100px" class="demo-ruleForm"  :class="shoe ? 'divv' : 'aa'">
+            <el-form-item label="食品种类">
+              <el-input v-model="input"></el-input>
+            </el-form-item>
+            <el-form-item label="种类描述">
+              <el-input v-model="input1"></el-input>
+            </el-form-item>
+            <el-button type="primary" @click="tj">提交</el-button>
+          </el-form>
+ 
         <div class="block" @click="hide">
-          <span v-show="hh"><i class="el-icon-caret-bottom"></i></span>
-          <span v-show="hhh"><i class="el-icon-caret-top"></i></span>
-          添加食品种类
+         <i class="el-icon-caret-top" v-if="shoe"></i>
+          <i class="el-icon-caret-bottom" v-else></i>
+          <span>添加食品种类</span>
         </div>
       </div>
+      <listfoods :id='this.$route.query.restaurant_id' :category_id='id'></listfoods>
     </div>
   </div>
 </template>
 
 <script>
+import listfoods from "./listfoods";
 export default {
+  components: {
+    listfoods
+  },
   data() {
     return {
       options: [],
@@ -49,35 +51,123 @@ export default {
       hh: true,
       hhh: false,
       input: "",
-      input1: ""
+      input1: "",
+      id:'',
+      id1:''
     };
   },
+  // beforeRouteEnter(to, from, next) {
+  //   next(vm => {
+  //     if (to.fullPath === "/list") {
+  //       vm.$confirm("添加食品需要选择一个商铺，先去就去选择商铺吗？", "提示", {
+  //         confirmButtonText: "确定",
+  //         cancelButtonText: "取消",
+  //         type: "warning"
+  //       })
+  //         .then(() => {
+  //           vm.$router.push({ path: "/merchant" });
+  //         })
+  //         .catch(() => {
+  //           vm.$message({
+  //             type: "info",
+  //             message: "取消"
+  //           });
+  //         });
+  //     }
+  //   });
+  // },
+  created(){
+  
+  },
   mounted() {
-    this.axios
-      .get("https://elm.cangdu.org/shopping/getcategory/6")
+console.log(this.$route)
+if(this.$route.fullPath === "/list"){
+this.$confirm("添加食品需要选择一个商铺，先去就去选择商铺吗？", "提示", {
+          confirmButtonText: "确定",
+          cancelButtonText: "取消",
+          type: "warning"
+        })
+          .then(() => {
+            this.$router.push({ path: "/merchant" });
+          })
+          .catch(() => {
+            this.$message({
+              type: "info",
+              message: "取消"
+            });
+          });
+}
+
+
+
+
+
+
+
+
+
+
+
+     var rand = parseInt(Math.random() * (10- 1+ 1) + 1); 
+    console.log(rand)
+    this.id1=rand
+    let b=this.$route.query.restaurant_id;
+    if(b){
+       this.axios.get('https://elm.cangdu.org/shopping/getcategory/'+b).then(res=>{
+         this.options = res.data.category_list;
+        })
+    }else{
+this.axios
+      .get(
+        "https://elm.cangdu.org/shopping/getcategory/"+rand)
       .then(res => {
         if (res.data.status === 1) {
           this.options = res.data.category_list;
         }
       });
+    }
+    
   },
   methods: {
     hide() {
-      if (this.shoe) {
-        this.hh = true;
-        this.hhh = false;
-        this.shoe = false;
-      } else {
-        this.hhh = true;
-        this.hh = false;
-        this.shoe = true;
-      }
+      this.shoe = !this.shoe;
     },
-    tj(){
-      let data={description:this.input1,name:this.input,restaurant_id:4}
-      this.axios.post('https://elm.cangdu.org/shopping/addcategory',data).then(res=>{
-        console.log(res.data)
-      })
+    food(v){
+       this.options.map(item=>{
+         if(item.name===v){
+           this.id=item.id
+         }
+       })
+
+    },
+    tj() {
+       let data = {
+        description: this.input1,
+        name: this.input,
+      };
+      if(this.$route.query.restaurant_id){
+        data.restaurant_id=this.$route.query.restaurant_id
+      }else if(this.id1){
+        data.restaurant_id=this.id1
+      }
+      this.axios
+        .post("https://elm.cangdu.org/shopping/addcategory", data)
+        .then(res => {
+          console.log(res.data);
+          if(res.data.status==1){
+            this.shoe=false
+             this.$message({
+          message:res.data.success,
+          type: 'success'
+        });
+          }else{
+             this.$message({
+          message:res.data.message,
+          type: 'error'
+        });
+          }
+        });
+        
     }
   }
 };
@@ -95,11 +185,12 @@ export default {
   i {
     color: gainsboro;
   }
-  i:hover {
-    color: #20a0ff;
-  }
+  
   &:hover {
-    color: #20a0ff;
+   
+    i,span{
+ color: #20a0ff;
+    }
   }
 }
 .from {
@@ -114,25 +205,11 @@ export default {
   .from-inp {
     width: 100%;
     border: 1px solid gainsboro;
+    margin-bottom: 20px;
     border-radius: 10px;
     & > div:nth-of-type(1) {
       margin-bottom: 30px;
       padding: 10px 50px 0 30px;
-    }
-    & > div:nth-of-type(2) {
-      padding-bottom: 20px;
-      background: #f9fafc;
-      &>p {
-        padding-top:10px;
-        .el-input--small {
-          width: 70%;
-        }
-      }
-      .el-button{
-        background: #20a0ff;
-        color:white;
-        margin-left:-200px;
-      }
     }
   }
 }
@@ -158,6 +235,16 @@ export default {
       border-radius: 50%;
     }
   }
+}
+.aa {
+  background: #f9fafc;
+  height: 0;
+  overflow: hidden;
+  transition: all 1s;
+}
+.divv {
+  height: 180px;
+  transition: all 1s;
 }
 .el-select {
   width: 80%;

@@ -1,15 +1,5 @@
 <template>
   <div class="userdata">
-    <div class="header_container">
-      <p>
-        <el-breadcrumb separator="/">
-          <el-breadcrumb-item :to="{ path: '/home' }">首页</el-breadcrumb-item>
-          <el-breadcrumb-item>数据管理</el-breadcrumb-item>
-          <el-breadcrumb-item>用户列表</el-breadcrumb-item>
-        </el-breadcrumb>
-      </p>
-      <div><img src="//elm.cangdu.org/img/default.jpg" class="avator" /></div>
-    </div>
     <div class="tab">
         <div>
     <el-table

@@ -4,22 +4,23 @@
       <Left
         v-on:on-add="add"
         @on-home="home"
-        @on-foodslist="foodslist"
-        @on-userlist="userlist"
-        @on-merchant="merchant"
       ></Left>
     </div>
     <div class="right">
+      <div>
+        <Hea></Hea>
+      </div>
       <router-view></router-view>
     </div>
   </div>
 </template>
 
 <script>
+import Hea from '../header/heade.vue';
 import Left from "../Login.vue";
 export default {
   components: {
-    Left
+    Left,Hea
   },
   data() {
     return {
@@ -27,6 +28,19 @@ export default {
       xian1: false
     };
   },
+  // 路由守卫写登录拦截
+  // beforeRouteEnter :(to,from,next)=>{
+  //   // let islogin=getCookie
+  //   // next((vm)=>{
+  //   //   var data=vm.$store.state.adminInfo
+  //   //   if(data.login===true){
+  //   //     next(true)
+  //   //   }else{
+  //   //     next('/')
+  //   //   }
+  //   // })
+  // },
+ 
   methods: {
     //添加商品
     add() {
@@ -49,20 +63,8 @@ export default {
 
     //首页
     home() {
-      this.$router.push({ path: "/manage/home" });
+      this.$router.push({ path: "/manage" });
     },
-    //食品列表
-    foodslist() {
-      this.$router.push({ path: "/manage/foodslist" });
-    },
-    //用户列表
-    userlist() {
-      this.$router.push({ path: "/manage/userlist" });
-    },
-    //商家列表
-    merchant() {
-      this.$router.push({ path: "/manage/merchant" });
-    }
   }
 };
 </script>
